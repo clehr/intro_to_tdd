@@ -1,0 +1,79 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Vending Machine Change Calculator TDD Tutorial (click here for getting to start page)</title>
+    <!-- Load the QUnit CSS file from CDN - Require to display our tests attractively -->
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-1.18.0.css">
+    <!-- Pure CSS is a minimalist CSS file we have included to make things look nicer -->
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+</head>
+<body style='margin: 0 1em; text-align: center;'>
+<div id='main'>
+    <h1>Vending Machine <em>Change Calculator</em></h1>
+    <img src="https://camo.githubusercontent.com/7668e4de0b5b2a1481233c1aefcbc8f272edb1a2/687474703a2f2f692e696d6775722e636f6d2f4862774d7144612e6a7067"
+         style='width: 33%;'/>
+    <h2>Calculate the change (<em>coins</em>) to return to a customer when they buy something.</h2>
+</div>
+
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+<!-- Load the QUnit Testing Framework from CDN - this is the important bit ... -->
+<script src="https://code.jquery.com/qunit/qunit-1.18.0.js"></script>
+
+<script>
+    function getChange(cashToPay, cashPaid) {
+        'use strict';
+        let changeInCents = cashPaid - cashToPay;
+        return changeInCoins(changeInCents);
+    }
+
+    function changeInCoins(changeInCents) {
+        const coinTypes = [200, 100, 50, 20, 10, 5, 2, 1];
+        let changeInCoins = [];
+
+        while (changeInCents > 0) {
+            const highestCoin = coinTypes.find(highestCoinFor(changeInCents)) || 0;
+            changeInCoins.push(highestCoin);
+            changeInCents = changeInCents - highestCoin;
+        }
+        return changeInCoins;
+    }
+
+    function highestCoinFor(changeInCents) {
+        return coinType => changeInCents - coinType >= 0;
+    }
+</script>
+
+<script>
+    test('when I have to pay 1 Cent for a snack and I pay exactly 1 Cent then there should be no change', function (assert) {
+        const result = getChange(1, 1); //no change/coins just an empty array
+        const expected = [];
+        assert.deepEqual(result, expected);
+    });
+
+    test('when I have to pay 215 Cents for a snack and I pay 300 Cents then there should be a change consisting of following coins: 50, 20, 10, 5', function (assert) {
+        const result = getChange(215, 300); // expect an array containing [50,20,10,5]
+        const expected = [50, 20, 10, 5];
+        assert.deepEqual(result, expected);
+    });
+
+    test('when I have to pay 486 Cents for a snack and I pay 600 Cents then there should be a change consisting of following coins: 100, 10, 2, 2', function (assert) {
+        const result = getChange(486, 600);
+        const expected = [100, 10, 2, 2];
+        assert.deepEqual(result, expected);
+    });
+
+    test('when I have to pay 12 Cents for a snack and I pay 400 Cents then there should be a change consisting of following coins: 200, 100, 50, 20, 10, 5, 2, 1', function (assert) {
+        const result = getChange(12, 400);
+        const expected = [200, 100, 50, 20, 10, 5, 2, 1];
+        assert.deepEqual(result, expected);
+    });
+
+    test('when I have to pay 13 Cents for a snack and I pay 999 Cents then there should be a change consisting of following coins: 200, 200, 200, 200, 100, 50, 20, 10, 5, 1', function (assert) {
+        const result = getChange(13, 999);
+        const expected = [200, 200, 200, 200, 100, 50, 20, 10, 5, 1];
+        assert.deepEqual(result, expected);
+    });
+</script>
+</body>
+</html>
